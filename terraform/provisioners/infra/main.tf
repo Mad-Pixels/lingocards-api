@@ -31,6 +31,18 @@ module "dynamo-dictionary-table" {
   stream_enabled       = true
 }
 
+module "dynamo-logs-table" {
+  source = "../../modules/dynamo"
+
+  project              = local.project
+  table_name           = local.logs_dynamo_schema.table_name
+  hash_key             = local.logs_dynamo_schema.hash_key
+  range_key            = local.logs_dynamo_schema.range_key
+  attributes           = local.logs_dynamo_schema.attributes
+  secondary_index_list = local.logs_dynamo_schema.secondary_indexes
+  stream_enabled       = true
+}
+
 module "dictionary_put_csv_queue" {
   source = "../../modules/sqs"
 

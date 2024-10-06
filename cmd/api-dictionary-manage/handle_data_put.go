@@ -2,10 +2,9 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
 	"errors"
+	"github.com/Mad-Pixels/lingocards-api/pkg/tools"
 	"net/http"
 
 	"github.com/Mad-Pixels/lingocards-api/pkg/api"
@@ -57,7 +56,7 @@ func handleDataPut(ctx context.Context, _ zerolog.Logger, raw json.RawMessage) (
 	if err := validate.Struct(&req); err != nil {
 		return nil, &api.HandleError{Status: http.StatusBadRequest, Err: err}
 	}
-	id := hex.EncodeToString(md5.New().Sum([]byte(req.Name + "-" + req.Author)))
+	id := tools.EncodeBaseID(req.Name, req.Author)
 
 	schemaItem := lingocardsdictionary.SchemaItem{
 		Id:           id,

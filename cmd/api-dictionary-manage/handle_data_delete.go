@@ -2,9 +2,8 @@ package main
 
 import (
 	"context"
-	"crypto/md5"
-	"encoding/hex"
 	"encoding/json"
+	"github.com/Mad-Pixels/lingocards-api/pkg/tools"
 	"net/http"
 
 	"github.com/Mad-Pixels/lingocards-api/pkg/api"
@@ -36,7 +35,7 @@ func handleDataDelete(ctx context.Context, _ zerolog.Logger, raw json.RawMessage
 	}
 
 	var (
-		id  = hex.EncodeToString(md5.New().Sum([]byte(req.Name + "-" + req.Author)))
+		id  = tools.EncodeBaseID(req.Name, req.Author)
 		key = map[string]types.AttributeValue{
 			"id":   &types.AttributeValueMemberS{Value: id},
 			"name": &types.AttributeValueMemberS{Value: req.Name},

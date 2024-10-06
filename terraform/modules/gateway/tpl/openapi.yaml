@@ -82,6 +82,48 @@ paths:
       security:
         - DeviceAuthorizer: []
 
+  /device/v1/logs/{action}:
+    post:
+      parameters:
+        - name: action
+          in: path
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+      responses:
+        "200":
+          description: "Successful response"
+          headers:
+            Access-Control-Allow-Origin:
+              schema:
+                type: "string"
+            Access-Control-Allow-Methods:
+              schema:
+                type: "string"
+            Access-Control-Allow-Headers:
+              schema:
+                type: "string"
+          content:
+            application/json:
+              schema:
+                type: object
+      x-amazon-apigateway-integration:
+        httpMethod: "POST"
+        uri: "arn:aws:apigateway:${region}:lambda:path/2015-03-31/functions/${invoke_lambdas_arns["api-logs-aggregate"].arn}/invocations"
+        responses:
+          default:
+            statusCode: "200"
+        passthroughBehavior: "when_no_match"
+        type: "aws_proxy"
+      security:
+        - DeviceAuthorizer: []
+
   /v1/category/{action}:
     get:
       responses:

@@ -89,6 +89,35 @@ func (d *Dynamo) Put(ctx context.Context, table string, item map[string]types.At
 	return err
 }
 
+// Update an item in the DynamoDB table with the specified key and attribute updates.
+func (d *Dynamo) Update(ctx context.Context, table string, key map[string]types.AttributeValue, updates map[string]types.AttributeValue, condition expression.ConditionBuilder) error {
+	updateBuilder := expression.UpdateBuilder{}
+	for attrName, attrValue := range updates {
+		updateBuilder = updateBuilder.Set(expression.Name(attrName), expression.Value(attrValue))
+	}
+	exprBuilder := expression.NewBuilder().WithUpdate(updateBuilder)
+	if condition.IsSet() {
+		exprBuilder = exprBuilder.WithCondition(condition)
+	}
+	expr, err := exprBuilder.Build()
+	if err != nil {
+		return err
+	}
+
+	updateInput := &dynamodb.UpdateItemInput{
+		TableName:                 aws.String(table),
+		Key:                       key,
+		UpdateExpression:          expr.Update(),
+		ExpressionAttributeNames:  expr.Names(),
+		ExpressionAttributeValues: expr.Values(),
+	}
+	if expr.Condition() != nil {
+		updateInput.ConditionExpression = expr.Condition()
+	}
+	_, err = d.client.UpdateItem(ctx, updateInput)
+	return err
+}
+
 // Get retrieves an item from DynamoDB table by its key.
 func (d *Dynamo) Get(ctx context.Context, table string, key map[string]types.AttributeValue) (*dynamodb.GetItemOutput, error) {
 	return d.client.GetItem(ctx, &dynamodb.GetItemInput{

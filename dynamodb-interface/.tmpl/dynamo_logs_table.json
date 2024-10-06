@@ -1,0 +1,51 @@
+{
+  "table_name": "lingocards-logs",
+  "hash_key": "id",
+  "range_key": "error_type",
+  "attributes": [
+    { "name": "id", "type": "S" },
+    { "name": "last_timestamp", "type": "N" },
+    { "name": "os_version", "type": "S" },
+    { "name": "device", "type": "S" },
+    { "name": "error_type", "type": "S" }
+  ],
+  "common_attributes": [
+    { "name": "error_message", "type": "S" },
+    { "name": "count", "type": "N" },
+    { "name": "app_version", "type": "S" },
+    { "name": "additional_info", "type": "S" },
+    { "name": "first_timestamp", "type": "N" }
+  ],
+  "secondary_indexes": [
+    {
+      "name": "OSVersionIndex",
+      "hash_key": "os_version",
+      "range_key": "last_timestamp",
+      "projection_type": "INCLUDE",
+      "non_key_attributes": [
+        "id",
+        "device",
+        "error_type",
+        "error_message",
+        "count",
+        "first_timestamp",
+        "app_version"
+      ]
+    },
+    {
+      "name": "DeviceIndex",
+      "hash_key": "device",
+      "range_key": "last_timestamp",
+      "projection_type": "INCLUDE",
+      "non_key_attributes": [
+        "id",
+        "os_version",
+        "error_type",
+        "error_message",
+        "count",
+        "first_timestamp",
+        "app_version"
+      ]
+    }
+  ]
+}
